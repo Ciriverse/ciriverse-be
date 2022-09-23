@@ -11,7 +11,7 @@ contract MilestoneNFT is ERC1155 {
     mapping(uint256 => string) private _tokenURIs;
     address private creatorMgmtAddress;
 
-    constructor(address _creatorMgmtAddress) ERC1155("") {
+    constructor(address _creatorMgmtAddress) payable ERC1155("") {
         creatorMgmtAddress = _creatorMgmtAddress;
     }
 
@@ -25,6 +25,7 @@ contract MilestoneNFT is ERC1155 {
     // mint as creator
     function mintCreatorNFT(string memory _tokenURI, uint256 _price)
         public
+        payable
         returns (uint256)
     {
         // check if creator
@@ -41,9 +42,10 @@ contract MilestoneNFT is ERC1155 {
         uint256 newItemId = _tokenIds.current();
         _mint(msg.sender, newItemId, 1, "");
         _setTokenURI(newItemId, _tokenURI);
-        /// after mint, please update CreatorMgnt NFTMilestone (call addMilestone)
+        // after mint, please update CreatorMgnt NFTMilestone (call addMilestone)
         CreatorMgmt(creatorMgmtAddress).addMilestone(
             address(this),
+            msg.sender,
             newItemId,
             _price
         );
@@ -54,12 +56,14 @@ contract MilestoneNFT is ERC1155 {
     // TODO need to check whether elligible trough Mgmt contract
     function mintDonatorNFT(address artist, uint256 milestoneId)
         public
+        payable
         returns (uint256)
     {
         // check if he eligible to mint the milestoneNFT?
         require(
             CreatorMgmt(creatorMgmtAddress).isEligibleToMint(
                 artist,
+                msg.sender,
                 milestoneId
             ),
             "You are not elligible"

@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+// 1st import as follows
+import "hardhat/console.sol";
 
 error PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
 error AmountToLow(address sender, address creator, uint256 donate);
@@ -116,10 +119,10 @@ contract CreatorMgmt is ReentrancyGuard {
                 // check if already marked true?
                 if (
                     (s_donators[msg.sender][creator].fund >=
-                        s_milestoneArray[creator][i].price) &&
-                    s_donators[msg.sender][creator].status[i] == false
+                        s_milestoneArray[creator][i].price)
                 ) {
                     s_donators[msg.sender][creator].status[i] = true;
+                    console.log("jadi elligible?");
                     // check if donator already own?
                     // if not own and eligible, send the NFTs
                     // TODO comeback to this latter when we create NFT contract
@@ -131,22 +134,20 @@ contract CreatorMgmt is ReentrancyGuard {
 
     function addMilestone(
         address nftAddress,
+        address creator,
         uint256 tokenId,
         uint256 price
-    )
-        external
-        isRegistered(msg.sender)
-        isOwner(nftAddress, tokenId, msg.sender)
+    ) external isRegistered(creator) // isOwner(nftAddress, tokenId, creator)
     {
         // add milestone NFTs, check first if the sender registered, is actually own the NFT
         // then check if not more than max milestones
         require(
-            s_milestoneArray[msg.sender].length <= MAX_MILESTONE,
+            s_milestoneArray[creator].length < MAX_MILESTONE,
             "You reach limit of milestone"
         );
-        s_milestoneArray[msg.sender].push(
-            Milestone(price, nftAddress, tokenId)
-        );
+        console.log("is it go here?");
+        s_milestoneArray[creator].push(Milestone(price, nftAddress, tokenId));
+        console.log("reach here?");
     }
 
     /*
@@ -167,7 +168,7 @@ contract CreatorMgmt is ReentrancyGuard {
     }
 
     function isLessMilestones(address creator) external view returns (bool) {
-        return s_milestoneArray[creator].length <= MAX_MILESTONE;
+        return s_milestoneArray[creator].length < MAX_MILESTONE;
     }
 
     function isCreator(address creatorAddress) external view returns (bool) {
@@ -178,14 +179,12 @@ contract CreatorMgmt is ReentrancyGuard {
         return true;
     }
 
-    function isEligibleToMint(address creatorAddress, uint256 milestoneId)
-        external
-        view
-        returns (bool)
-    {
-        if (
-            s_donators[msg.sender][creatorAddress].status[milestoneId] == true
-        ) {
+    function isEligibleToMint(
+        address creatorAddress,
+        address donator,
+        uint256 milestoneId
+    ) external view returns (bool) {
+        if (s_donators[donator][creatorAddress].status[milestoneId] == true) {
             return true;
         }
         return false;
@@ -201,5 +200,13 @@ contract CreatorMgmt is ReentrancyGuard {
 
     function afterMintMilestone(address creator, uint256 milestoneId) external {
         s_donators[msg.sender][creator].status[milestoneId] = false;
+    }
+
+    function getCreator(address creator)
+        external
+        view
+        returns (Creator memory)
+    {
+        return s_creators[address(creator)];
     }
 }
