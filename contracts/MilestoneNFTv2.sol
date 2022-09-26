@@ -68,6 +68,8 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
     mapping(address => Creator) private s_creators;
     mapping(address => Milestone[]) private s_milestoneArray;
     mapping(address => mapping(address => MilestonePerDonator)) s_donators;
+    mapping(address => uint256) private s_donatorsCount;
+    Creator[] private s_creatorsList;
 
     modifier notRegistered(address creatorAddress) {
         Creator memory creator = s_creators[creatorAddress];
@@ -106,6 +108,7 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         notRegistered(msg.sender)
     {
         s_creators[msg.sender] = Creator(msg.sender, _name, _pic, 0);
+        s_creatorsList.push(Creator(msg.sender, _name, _pic, 0));
         emit UserCreated(msg.sender, _name, _pic);
     }
 
@@ -129,6 +132,9 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
             revert AmountToLow(msg.sender, creator, msg.value);
         }
         s_creators[creator].funds += msg.value;
+        if (s_donators[msg.sender][creator].fund == 0) {
+            s_donatorsCount[msg.sender] += 1;
+        }
         s_donators[msg.sender][creator].fund += msg.value;
         uint256 milestoneCount = s_milestoneArray[creator].length;
 
@@ -237,6 +243,10 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         return s_creators[address(creator)];
     }
 
+    function getDonatorsCount(address creator) external view returns (uint256) {
+        return s_donatorsCount[creator];
+    }
+
     function _setTokenURI(uint256 tokenId, string memory _tokenURI)
         internal
         virtual
@@ -284,6 +294,10 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
 
     function uri(uint256 _id) public view override returns (string memory) {
         return tokenURI[_id];
+    }
+
+    function getCreators() public view returns (Creator[] memory) {
+        return s_creatorsList;
     }
 
     function getMilestones(address creator)
