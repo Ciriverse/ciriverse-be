@@ -43,7 +43,7 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         address nftAddress;
         uint256 tokenId;
     }
-    // tambah minted status nya
+    // add minted status
     struct MilestonePerDonator {
         uint256 fund;
         bool[5] status;
@@ -133,7 +133,7 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         }
         s_creators[creator].funds += msg.value;
         if (s_donators[msg.sender][creator].fund == 0) {
-            s_donatorsCount[msg.sender] += 1;
+            s_donatorsCount[creator] += 1;
         }
         s_donators[msg.sender][creator].fund += msg.value;
         uint256 milestoneCount = s_milestoneArray[creator].length;
@@ -200,8 +200,8 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         return s_milestoneArray[creator].length < MAX_MILESTONE;
     }
 
-    function isCreator() public view returns (bool) {
-        Creator memory creator = s_creators[msg.sender];
+    function isCreator(address _address) public view returns (bool) {
+        Creator memory creator = s_creators[_address];
         if (creator.addr == address(0)) {
             return false;
         }
@@ -261,7 +261,7 @@ contract MilestoneNFTv2 is ReentrancyGuard, ERC1155 {
         returns (uint256)
     {
         // check if creator
-        require(isCreator(), "Not a creator, register first");
+        require(isCreator(msg.sender), "Not a creator, register first");
         // check if reach maximum milestone
         require(isLessMilestones(msg.sender), "You reach limit of milestone");
         _tokenIds.increment();
