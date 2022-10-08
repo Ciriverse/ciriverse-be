@@ -30,4 +30,11 @@ module.exports = {
     namedAccounts: {
         deployer: 0,
     },
+    gasReporter: {
+        enabled: true,
+        currency: "USD",
+        // outputFile: "gas-report.txt",
+        noColors: true,
+        // coinmarketcap: COINMARKETCAP_API_KEY,
+    },
 }

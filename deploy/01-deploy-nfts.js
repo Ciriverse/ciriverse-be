@@ -11,33 +11,41 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
-    const creatorMgmt = await ethers.getContract("CreatorMgmt")
+
     log("----------------------------------------------------")
-    const args = [creatorMgmt.address]
-    const milestoneNft = await deploy("MilestoneNFT", {
+    const arguments = []
+    const MilestoneNFTv2 = await deploy("MilestoneNFTv2", {
+        from: deployer,
+        args: arguments,
+        log: true,
+        waitConfirmations: waitBlockConfirmations,
+    })
+
+    log("----------------------------------------------------")
+    const args = [MilestoneNFTv2.address]
+    const CollectibleNFT = await deploy("CollectibleNFT", {
         from: deployer,
         args: args,
         log: true,
         waitConfirmations: waitBlockConfirmations,
     })
+    log("----------------------------------------------------")
 
-    const basicNftTwo = await deploy("CollectibleNFT", {
+    const CiriverseDAO = await deploy("CiriverseDAO", {
         from: deployer,
         args: args,
         log: true,
         waitConfirmations: waitBlockConfirmations,
     })
-
     // Verify the deployment
-    if (
-        !developmentChains.includes(network.name) &&
-        process.env.ETHERSCAN_API_KEY
-    ) {
-        log("Verifying...")
-        await verify(basicNft.address, args)
-        await verify(basicNftTwo.address, args)
-    }
+    // if (
+    //     !developmentChains.includes(network.name) &&
+    //     process.env.ETHERSCAN_API_KEY
+    // ) {
+    //     log("Verifying...")
+    //     await verify(MilestoneNFTv2.address, arguments)
+    // }
     log("----------------------------------------------------")
 }
 
-module.exports.tags = ["all", "nfts"]
+module.exports.tags = ["all", "NFTS"]
