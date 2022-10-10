@@ -1,13 +1,16 @@
-# Sample Hardhat Project
+# Ciriverse Smart Contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+Consist of 3 Contracts :
 
-Try running some of the following tasks:
+1. `MilestoneNFTv2.sol` for ERC1155 main contracts to hold users and NFTs features gating.
+2. `CollectibleNFT.sol` for ERC721 Collectibles to mint from creators.
+3. `CiriverseDAO.sol` for Polling based on ownership of ERC115 contract above.
+4. Try running some of the following tasks:
 
 ```shell
 npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
 npx hardhat node
-npx hardhat run scripts/deploy.js
+npx hardhat deploy --network baobab
 ```
