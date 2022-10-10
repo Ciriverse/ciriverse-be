@@ -190,4 +190,23 @@ contract CiriverseDAO is Ownable {
     function getNumProposals(address creator) external view returns (uint256) {
         return numProposals[creator];
     }
+
+    /**
+     * @dev check if donators can vote
+     */
+    function IsCanVote(address creator, uint256 proposalIndex)
+        external
+        view
+        returns (bool)
+    {
+        Proposal storage proposal = s_proposals[creator][proposalIndex];
+
+        uint256 numHoldNFTs = MilestoneNFTv2(milestoneAddress).getVotesCount(
+            creator,
+            msg.sender
+        );
+        // substract holdNFTs count with vote count
+        uint256 numVotes = numHoldNFTs - proposal.voters[msg.sender];
+        return (numVotes > 0);
+    }
 }
