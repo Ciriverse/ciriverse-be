@@ -15,11 +15,6 @@ Try running some of the following tasks:
 ```shell
 npx hardhat help
 npx hardhat test
-npx hardhat deploy --network baobab
+npx hardhat deploy --network goerli
 ```
-Testnet Contracts :
-
-- [Profile Graph and Milestone NFTs Contract](https://baobab.scope.klaytn.com/account/0xd8d78614A02A543f0fc27c1e4F41DF087816F98e?tabId=txList)
-- [Collectible NFTs Contract](https://baobab.scope.klaytn.com/account/0x01Ebab7B1D0Ae2064311E7054844CE5c8dB96d96?tabId=txList)
-- [Voting Contract](https://baobab.scope.klaytn.com/account/0x6064BB01e024059f03a47c5bCe02d0a0b84D45E2?tabId=txList)
 
